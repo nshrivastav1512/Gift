@@ -209,7 +209,7 @@ function init() {
     const fontLoader = new THREE.FontLoader();
 
     // Define asset paths (Good practice to have them easily accessible)
-    const FONT_PATH = 'fonts/Orbitron_ExtraBold.json';
+    const FONT_PATH = 'Fonts/Orbitron_ExtraBold.json';
     // STAR_IMAGE_PATH is already a global constant
     const BACKGROUND_STAR_PATH = 'images/background-star-dot.png';
     const STORY_DATA_PATH = 'story.json';
