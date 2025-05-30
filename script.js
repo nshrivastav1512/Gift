@@ -343,6 +343,7 @@ function displayCurrentImage() {
         return;
     }
 
+
     infoImage.style.display = 'block'; // Ensure image element is visible
     // Fade out current image
     infoImage.style.opacity = '0';
@@ -356,7 +357,22 @@ function displayCurrentImage() {
 
     updateCarouselDots();
     updateCarouselNavButtons();
+
+    if (currentStoryPointImages.length > 1) {
+        const nextImageIndex = (currentImageIndex + 1) % currentStoryPointImages.length;
+        if (nextImageIndex !== currentImageIndex) { // Ensure it's actually a different image
+            preloadImage(currentStoryPointImages[nextImageIndex]);
+        }
+    }
 }
+
+// Make sure preloadImage function is defined:
+function preloadImage(url) {
+    const img = new Image();
+    img.src = url;
+    // console.log("Preloading:", url); // Optional: for debugging
+}
+
 
 function updateCarouselNavButtons() {
     if (currentStoryPointImages.length > 1) {
