@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Journey Through The Stars - For Akanksha</title>
+    <!-- Link to your NEW CSS file -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Basic styles to ensure canvas fills screen and overlays work */
+        body { margin: 0; overflow: hidden; background-color: #000; color: #fff; font-family: sans-serif; }
+        #three-canvas { display: block; position: fixed; top: 0; left: 0; z-index: 1; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; justify-content: center; align-items: center; background-color: rgba(0, 0, 10, 0.8); /* Default semi-transparent */ transition: opacity 0.5s ease-out; }
+        .overlay.hidden { opacity: 0; pointer-events: none; }
+        .overlay-content { text-align: center; padding: 30px; background-color: rgba(10, 0, 20, 0.7); border-radius: 10px; max-width: 600px; }
+        .overlay-content button { padding: 10px 20px; font-size: 1.1em; margin-top: 20px; cursor: pointer; background-color: #eee; border: none; border-radius: 5px; color: #333; }
+        .overlay-content button:hover { background-color: #fff; }
+
+        /* Intro Specific Visual (replace with image/css later) */
+        #intro-overlay .man-looking-sky {
+             width: 150px; height: 150px; background-color: #555; border-radius: 50%; margin: 0 auto 20px auto; display: block; opacity: 0.6; /* Placeholder visual */
+        }
+
+
+        /* Hover Detail Pop-up */
+        #point-info-overlay {
+            position: fixed; /* Will be positioned by JS */
+            z-index: 20;
+            background-color: rgba(20, 20, 40, 0.9);
+            border: 1px solid rgba(150, 150, 200, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            max-width: 350px; /* Limit size */
+            color: #eee;
+            opacity: 0; /* Hidden by default */
+            pointer-events: none; /* Non-interactive */
+            transition: opacity 0.2s ease-in-out;
+            font-size: 0.9em;
+        }
+        #point-info-overlay.visible { opacity: 1; }
+        #point-info-overlay h3 { font-size: 1.2em; margin-bottom: 5px; color: #fff; }
+        #point-info-overlay .date { font-size: 0.8em; color: #aaa; margin-bottom: 10px; display: block;}
+        #point-info-overlay img { max-width: 100%; height: auto; border-radius: 4px; margin-top: 10px; border: 1px solid #555; }
+        #point-info-overlay p { margin: 10px 0 0 0; font-size: 0.95em; color: #ddd; }
+
+        /* Fixed Age/Stats */
+         #age-display-container { /* Renamed container */
+             position: fixed;
+             top: 20px;
+             left: 20px;
+             z-index: 15;
+             background-color: rgba(0, 0, 0, 0.5);
+             padding: 8px 15px;
+             border-radius: 5px;
+             font-size: 0.9em;
+             color: #ccc;
+             cursor: default;
+        }
+         #stats-tooltip { /* Kept old ID, using similar CSS */
+             position: fixed;
+             top: 60px;
+             left: 20px;
+             z-index: 14;
+             background-color: rgba(20, 20, 40, 0.85);
+             padding: 15px;
+             border-radius: 5px;
+             border: 1px solid rgba(100, 100, 150, 0.5);
+             opacity: 0;
+             pointer-events: none;
+             transition: opacity 0.3s ease-in-out;
+             font-size: 0.85em;
+             color: #ddd;
+         }
+         #stats-tooltip.visible { opacity: 1; pointer-events: auto;}
+         #stats-tooltip p { margin-bottom: 5px;}
+         #stats-tooltip p:last-child {margin-bottom: 0;}
+    </style>
+</head>
+<body>
+
+    <!-- The Canvas for the 3D Scene -->
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Overlay for Intro / Birthday Message -->
+    <div id="intro-overlay" class="overlay">
+        <div class="overlay-content">
+            <!-- Content here will be set by JS based on date -->
+            <div class="man-looking-sky" id="intro-visual"></div>
+             <h2 id="intro-title">Hello Dear Love</h2>
+            <p id="intro-message">Sorry, for making you wait a thoda for this! I’ve been so incredibly excited, hiding away like a bit of a secret agent, because I've been pouring my whole heart and countless hours into this very special surprise – bas for you. It’s something I've dreamed of giving you, a gift crafted not just with ribbons, but with lines of code, shimmering starlight, and every bit of my love. I’ve tried to build our own little digital haven here, our personal galaxy where every single star tells a part of your amazing life story, and the beautiful, unfolding story of 'us'. Believe me, my love, this isn’t just some website; it’s truly a piece of my heart, made dil se just for you.
+                <br><br>
+                I truly, deeply hope it touches your heart in a special way, and brings you endless happiness, wonder, and maybe even a few happy tears. Because honestly, every moment I spent creating this world for you – thinking of you with every single click, every image chosen, and every line written – filled me with so much joy and anticipation. Whenever you’re ready to unwrap this digital surprise and embark on this very personal voyage through our stars, just click 'Recall'..</p>
+            <button id="recall-button">Recall</button>
+        </div>
+    </div>
+
+    <!-- Overlay to display Point Info on Hover -->
+    <div id="point-info-overlay">
+        <h3 id="info-title">Point Title</h3>
+        <span id="info-date" class="date">Date</span>
+
+        <!-- Image Carousel Container -->
+        <div id="info-image-container">
+            <img id="info-image" src="" alt="Memory Image">
+            <button id="info-image-prev" class="carousel-nav-button" aria-label="Previous Image"><</button>
+            <button id="info-image-next" class="carousel-nav-button" aria-label="Next Image">></button>
+        </div>
+        <div id="info-image-dots" class="carousel-dots-container">
+            <!-- Dots will be generated by JavaScript -->
+        </div>
+
+        <p id="info-note">Note about this memory will appear here.</p>
+    </div>
+    <!-- Fixed Age/Stats Display -->
+    <div id="age-display-container">
+        Age: <span id="current-age">Loading...</span>
+    </div>
+    <div id="stats-tooltip" class="hidden">
+        <p>Heartbeats: <span id="stat-heartbeats">...</span></p>
+        <p>Breaths: <span id="stat-breaths">...</span></p>
+        <p>Moon Orbits: <span id="stat-moon-orbits">...</span></p>
+        <p>Total Candles: <span id="stat-candles">...</span></p>
+
+    </div>
+
+
+    <!-- Libraries: Three.js (mandatory) and Anime.js (for UI animations) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Optional: OrbitControls for debugging camera placement -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <!-- Link to your NEW JavaScript file -->
+    <script src="script.js" defer></script>
+
+</body>
+</html>

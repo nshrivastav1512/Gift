@@ -1,0 +1,319 @@
+/* style-3d.css */
+
+/* ---=== General Setup ===--- */
+body {
+    margin: 0;
+    overflow: hidden; /* Crucial for full-screen canvas & no scrollbars */
+    background-color: #000005; /* Very dark fallback background */
+    color: #ffffff; /* Default text color for overlays */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Consistent font */
+    line-height: 1.6;
+}
+
+#three-canvas {
+    display: block; /* Remove potential bottom space */
+    position: fixed; /* Take up full space */
+    top: 0;
+    left: 0;
+    z-index: 1; /* Behind overlays */
+    outline: none; /* Prevent focus border */
+}
+
+/* ---=== Base Overlay Styles ===--- */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* Above canvas, below point info */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Default semi-transparent, birthday can override */
+    background-color: rgba(0, 0, 10, 0.8);
+    opacity: 1; /* Visible by default */
+    transition: opacity 0.5s ease-out;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none; /* Don't intercept clicks when hidden */
+}
+
+.overlay-content {
+    text-align: center;
+    padding: 30px 40px;
+    background-color: rgba(10, 0, 20, 0.75); /* Slightly different overlay bg */
+    border-radius: 10px;
+    max-width: 90%;
+    width: 600px; /* Max width for content */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.overlay-content h2 {
+    margin-bottom: 15px;
+    color: #e0e0ff;
+}
+
+.overlay-content p {
+    margin-bottom: 20px;
+    color: #ccc;
+}
+
+.overlay-content button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 20px;
+    cursor: pointer;
+    background: linear-gradient(145deg, #e1e1e1, #ffffff);
+    border: none;
+    border-radius: 5px;
+    color: #333;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.overlay-content button:hover {
+    background: linear-gradient(145deg, #ffffff, #e1e1e1);
+    transform: scale(1.02);
+}
+
+.overlay-content button:active {
+    transform: scale(0.98);
+}
+
+/* ---=== Intro/Birthday Specific Styles ===--- */
+
+/* Birthday variant - perhaps slightly lighter/different background? */
+#intro-overlay[data-is-birthday="true"] {
+    background-color: rgba(50, 0, 50, 0.7); /* Example: more purplish tint */
+}
+
+/* Placeholder visual for the "man looking at sky" */
+#intro-overlay .man-looking-sky {
+    width: 150px;
+    height: 150px;
+    background-image: url('Images/Akanksha\ photos\ grouped/Pawna lake outing/IMG20240511183308.jpg');
+    background-color: #555; /* Fallback placeholder color */
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%; /* Example style */
+    margin: 0 auto 20px auto;
+    display: block;
+    opacity: 0.6;
+    border: 3px solid rgba(255,255,255,0.2);
+}
+
+/* ---=== Point Info Hover Overlay ===--- */
+#point-info-overlay {
+    position: fixed; /* Position will be dynamically set by JS */
+    z-index: 20; /* Above everything except maybe tooltip */
+    background-color: rgba(25, 25, 45, 0.9); /* Dark blue/purple tint */
+    border: 1px solid rgba(150, 150, 200, 0.5);
+    border-radius: 8px;
+    padding: 15px 20px;
+    max-width: 350px;
+    color: #eee;
+    opacity: 0; /* Hidden by default */
+    pointer-events: none; /* Non-interactive when hidden */
+    transform: scale(0.95); /* Start slightly small */
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    font-size: 0.9em;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+#point-info-overlay.visible {
+    opacity: 1;
+    pointer-events: auto; /* Allow text selection etc. if needed */
+    transform: scale(1);
+}
+
+#point-info-overlay h3 {
+    font-size: 1.3em;
+    margin-bottom: 5px;
+    color: #fff;
+    font-weight: 600;
+}
+
+#point-info-overlay .date {
+    font-size: 0.8em;
+    color: #a0a0c0; /* Muted */
+    margin-bottom: 12px;
+    display: block;
+    font-style: italic;
+}
+
+#point-info-overlay img {
+    display: block; /* Prevent extra space below image */
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#point-info-overlay p {
+    margin: 15px 0 0 0;
+    font-size: 0.95em;
+    color: #ddd;
+    line-height: 1.5;
+}
+
+/* ---=== Fixed Age/Stats Display ===--- */
+#age-display-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 15; /* Above canvas, potentially below point info if overlap occurs */
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    color: #ccc;
+    cursor: default;
+    backdrop-filter: blur(2px); /* Optional glass effect */
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#stats-tooltip {
+    position: fixed;
+    top: 60px; /* Position below age display */
+    left: 20px;
+    z-index: 14; /* Below age display */
+    background-color: rgba(20, 20, 40, 0.9);
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid rgba(100, 100, 150, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+    font-size: 0.85em;
+    color: #ddd;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#stats-tooltip.visible {
+    opacity: 1;
+    pointer-events: auto; /* Allow text selection */
+}
+
+#stats-tooltip p {
+    margin-bottom: 5px;
+}
+
+#stats-tooltip p:last-child {
+    margin-bottom: 0;
+}
+
+/* ---=== Point Info Hover Overlay - Carousel Additions ===--- */
+#info-image-container {
+    position: relative; /* For positioning nav buttons absolutely within it */
+    margin-top: 15px; /* Keep existing margin from original image */
+    margin-bottom: 10px; /* Space before dots */
+    overflow: hidden; /* Ensures nothing spills out if image sizes are odd during transitions */
+}
+
+#point-info-overlay img#info-image { /* Keep existing styles for the image itself */
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    /* margin-top: 15px;  <-- This margin is now on #info-image-container */
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: opacity 0.3s ease-in-out; /* For fade effect during image change */
+}
+
+.carousel-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    border: none;
+    border-radius: 50%; /* Circular buttons */
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 30px; /* Center text vertically */
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    z-index: 25; /* Above the image */
+    display: none; /* Hidden by default, JS will show them */
+}
+
+.carousel-nav-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    opacity: 1;
+}
+
+#info-image-prev {
+    left: 5px;
+}
+
+#info-image-next {
+    right: 5px;
+}
+
+.carousel-dots-container {
+    text-align: center;
+    padding: 5px 0;
+    display: none; /* Hidden by default, JS will show them */
+}
+
+.carousel-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    margin: 0 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.carousel-dot.active {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* ---=== Responsive Adjustments (Example) ===--- */
+@media (max-width: 600px) {
+    .overlay-content {
+        padding: 20px;
+        max-width: 90%;
+        width: auto;
+    }
+
+    .overlay-content h2 {
+        font-size: 1.3em;
+    }
+    .overlay-content p {
+        font-size: 0.95em;
+    }
+    .overlay-content button {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+
+    #point-info-overlay {
+        max-width: 300px; /* Slightly smaller on mobile */
+        font-size: 0.85em;
+    }
+
+    #age-display-container {
+        top: 10px;
+        left: 10px;
+        font-size: 0.8em;
+        padding: 6px 10px;
+    }
+    #stats-tooltip {
+        top: 45px; /* Adjust based on smaller age display */
+        left: 10px;
+        font-size: 0.8em;
+        padding: 12px;
+    }
+}
