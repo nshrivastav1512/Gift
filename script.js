@@ -34,7 +34,7 @@ let isStatsTooltipVisible = false;
     const STORY_POINT_COUNT = 32; // Number of placeholder points/images
     const HER_BIRTHDAY_MONTH = 4; // 0-indexed (0=Jan, 4=May)
     const HER_BIRTHDAY_DAY = 9;
-    const STAR_IMAGE_PATH = 'images/star-glow.png'; // <<<=== ADDED: Path to your star image
+    const STAR_IMAGE_PATH = 'Images/star-glow.png'; // <<<=== ADDED: Path to your star image
 
 
 // ---=== Parallax Star Configuration (will move to config.js later) ===---
@@ -209,9 +209,9 @@ function init() {
     const fontLoader = new THREE.FontLoader();
 
     // Define asset paths (Good practice to have them easily accessible)
-    const FONT_PATH = 'fonts/Orbitron_ExtraBold.json';
+    const FONT_PATH = 'Fonts/Orbitron_ExtraBold.json';
     // STAR_IMAGE_PATH is already a global constant
-    const BACKGROUND_STAR_PATH = 'images/background-star-dot.png';
+    const BACKGROUND_STAR_PATH = 'Images/background-star-dot.png';
     const STORY_DATA_PATH = 'story.json';
 
     // Promise for Font Loading
@@ -694,7 +694,7 @@ function setupCarouselNavListeners() {
                 title: data.title,
                 note: data.note,
                 // NEW: Store the array of images, ensuring paths are correct
-                images: data.images ? data.images.map(imgName => 'images/' + imgName) : [], // Handle if data.images is missing
+                images: data.images ? data.images.map(imgName => 'Images/' + imgName) : [], // Handle if data.images is missing
                 isEnd: data.isEnd || false,
                 originalScale: isSpecial ? new THREE.Vector3(1, 1, 1) : new THREE.Vector3(2, 2, 1),
                 isHovered: false,
